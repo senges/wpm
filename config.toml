@@ -1,0 +1,19 @@
+VCS = "github.com/user/repo.git"
+
+[Environment]
+
+    [Environment.local]
+    WpPath = "/var/www/html/wordpress"
+
+    [Environment.dev]
+    WpPath = "/var/www/html/wordpress"
+    Username = "web-manager"
+    Host = "192.168.0.1:22"
+    AuthMethod = "password"
+
+    [Environment.prod]
+    WpPath = "/var/www/html/wordpress"
+    Username = "web-manager"
+    Host = "192.168.0.1:22"
+    AuthMethod = "publickey"
+    KeyPath = "/home/mike/.ssh/key.pem"
