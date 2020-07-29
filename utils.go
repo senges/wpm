@@ -16,13 +16,19 @@ func CheckIfError(err error) {
 	panic(err)
 }
 
-func Info(format string, args ...interface{}) {
+func INFO(format string, args ...interface{}) {
 	if VERBOSE {
 		fmt.Printf("\x1b[34;1m%s\x1b[0m\n", fmt.Sprintf(format, args...))
 	}
 }
 
-func Warning(format string, args ...interface{}) {
+func CMD(format string, args ...interface{}) {
+	if VERBOSE {
+		fmt.Printf("> \x1b[34;1m%s\x1b[0m\n", fmt.Sprintf(format, args...))
+	}
+}
+
+func WARN(format string, args ...interface{}) {
 	if VERBOSE {
 		fmt.Printf("\x1b[36;1m%s\x1b[0m\n", fmt.Sprintf(format, args...))
 	}
