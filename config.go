@@ -5,7 +5,10 @@ import (
 	"fmt"
 	toml "github.com/pelletier/go-toml"
 	"io/ioutil"
+	"os/user"
 )
+
+const localEnvName string = "local"
 
 /* Global config file */
 var ConfigFile Config
@@ -13,7 +16,7 @@ var CurrentEnv string
 
 type Config struct {
 	VCS string
-	Environment map[string]Environment
+	Environment map[string]*Environment
 }
 
 type Environment struct {
@@ -41,10 +44,16 @@ func LoadConfigFileFromDisk() {
 	}
 
 	/* Default Current environment is set to local */
-	if err := SwitchToEnv("local"); err != nil {
+	if err := SwitchToEnv(localEnvName); err != nil {
 		fmt.Println("No local environment in config file")
 		panic(err)
 	}
+
+	/* Configure local env with proper user / host */
+	localUser, err := user.Current()
+
+	ConfigFile.Environment[localEnvName].Username = localUser.Username
+	ConfigFile.Environment[localEnvName].Host = "localhost"
 
 }
 

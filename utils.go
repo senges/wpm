@@ -24,7 +24,7 @@ func INFO(format string, args ...interface{}) {
 
 func CMD(format string, args ...interface{}) {
 	if VERBOSE {
-		fmt.Printf("> \x1b[34;1m%s\x1b[0m\n", fmt.Sprintf(format, args...))
+		fmt.Printf("\x1b[34;1m> %s\x1b[0m\n", fmt.Sprintf(format, args...))
 	}
 }
 
