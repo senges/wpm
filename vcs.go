@@ -1,11 +1,16 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	git "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 	"os"
+)
+
+var (
+	ErrEnvDoesNotExists = errors.New("target environment does not exist")
 )
 
 /* Clone repository to defined path */
@@ -27,8 +32,9 @@ func CloneTo(envName string) {
 }
 
 /* Switch to branch envName */
-func SwitchToBranch(envName string) {
-	spec := fmt.Sprintf("refs/heads/%s:refs/heads/%s", envName, envName)
+func SwitchToBranch(envName string) error {
+	ref := fmt.Sprintf("refs/heads/%s", envName)
+	spec := fmt.Sprintf("%s:%s", ref, ref)
 
 	INFO("Retrieving local repository information")
 	r, err := git.PlainOpen(ConfigFile.Environment[localEnvName].WpPath)
@@ -36,6 +42,10 @@ func SwitchToBranch(envName string) {
 
 	w, err := r.Worktree()
 	CheckIfError(err)
+
+	if !branchExists(r, envName) {
+		return ErrEnvDoesNotExists
+	}
 
 	INFO("Fetching remote branch %v", envName)
 	err = r.Fetch(&git.FetchOptions{
@@ -52,16 +62,19 @@ func SwitchToBranch(envName string) {
 	CheckIfError(err)
 
 	showHead(r)
+
+	return nil
 }
 
 /* Check if branch ref exists */
 /* Quite ugly but quite working as well for the moment */
-func branchExists(r *git.Repository, refName string) bool {
+func branchExists(r *git.Repository, branchName string) bool {
+	fullRef := fmt.Sprintf("refs/remotes/origin/%s", branchName)
 	exists := false
 
 	refs, _ := r.References()
 	refs.ForEach(func(ref *plumbing.Reference) error {
-		if ref.Type() == plumbing.HashReference && string(ref.Name()) == refName {
+		if ref.Type() == plumbing.HashReference && string(ref.Name()) == fullRef {
 			exists = true
 		}
 
