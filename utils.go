@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-var VERBOSE = true
+const VERBOSE = true
 
 func CheckIfError(err error) {
 	if err == nil {
@@ -28,8 +28,8 @@ func CMD(format string, args ...interface{}) {
 	}
 }
 
-func WARN(format string, args ...interface{}) {
+func OK(format string, args ...interface{}) {
 	if VERBOSE {
-		fmt.Printf("\x1b[36;1m%s\x1b[0m\n", fmt.Sprintf(format, args...))
+		fmt.Printf("\x1b[36;1m%s\x1b[0m\n\n", fmt.Sprintf(format, args...))
 	}
 }
