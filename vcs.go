@@ -17,15 +17,18 @@ func CloneTo(envName string) {
 	INFO("Deploying last wordpress version to `%v' on host [%v@%v]", env.WpPath, env.Username, env.Host)
 	CMD("git -C %s clone %s", env.WpPath, url)
 
-	_, err := git.PlainClone(env.WpPath, false, &git.CloneOptions{
+	r, err := git.PlainClone(env.WpPath, false, &git.CloneOptions{
 		URL: url,
 		Progress: os.Stdout,
 	})
 	CheckIfError(err)
+
+	showHead(r)
 }
 
 /* Switch to branch envName */
 func SwitchToBranch(envName string) {
+	spec := fmt.Sprintf("refs/heads/%s:refs/heads/%s", envName, envName)
 
 	INFO("Retrieving local repository information")
 	r, err := git.PlainOpen(ConfigFile.Environment[localEnvName].WpPath)
@@ -34,22 +37,21 @@ func SwitchToBranch(envName string) {
 	w, err := r.Worktree()
 	CheckIfError(err)
 
-	ref := fmt.Sprintf("refs/heads/%s", envName)
-	spec := fmt.Sprintf("%s:%s", ref, ref)
-
-	if !branchExists(r, ref) {
-		INFO("Fetching remote branch %v", envName)
-
-		err = r.Fetch(&git.FetchOptions{
-			RemoteName: "origin",
-			RefSpecs: []config.RefSpec{ config.RefSpec(spec) },
-		})
+	INFO("Fetching remote branch %v", envName)
+	err = r.Fetch(&git.FetchOptions{
+		RemoteName: "origin",
+		RefSpecs: []config.RefSpec{ config.RefSpec(spec) },
+	})
+	// Already-Up-To-Date should not be treated as error and panic program
+	if err != nil && err != git.NoErrAlreadyUpToDate {
 		CheckIfError(err)
 	}
 
 	INFO("Switching to branch %s", envName)
 	err = w.Checkout(&git.CheckoutOptions{Branch:plumbing.NewBranchReferenceName(envName)})
 	CheckIfError(err)
+
+	showHead(r)
 }
 
 /* Check if branch ref exists */
@@ -67,4 +69,15 @@ func branchExists(r *git.Repository, refName string) bool {
 	})
 
 	return exists
+}
+
+func showHead(r *git.Repository) {
+
+	ref, err := r.Head()
+	CheckIfError(err)
+
+	commit, err := r.CommitObject(ref.Hash())
+	CheckIfError(err)
+
+	OK("HEAD -> %sRef: %s", commit, ref.Name())
 }
