@@ -3,9 +3,18 @@ package main
 
 import (
 	"fmt"
+	"os"
 )
 
 const VERBOSE = true
+
+/* Get current working directory */
+func getWD() string {
+	path, err := os.Getwd()
+	CheckIfError(err)
+
+	return path
+}
 
 func CheckIfError(err error) {
 	if err == nil {
