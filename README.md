@@ -40,13 +40,20 @@ VCS = "github.com/user/repo.git"
 [Environment]
 
     [Environment.local]
-    WpPath = "A/WP/Path"
+    WpPath = "/var/www/html/wordpress"
 
-    [Environment.remote]
-    AuthMethod = "password"
-    Username = "root"
+    [Environment.dev]
+    WpPath = "/var/www/html/wordpress"
+    Username = "web-manager"
     Host = "192.168.0.1:22"
-    WpPath = "A/WP/Path"
+    AuthMethod = "password"
+
+    [Environment.prod]
+    WpPath = "/var/www/html/wordpress"
+    Username = "web-manager"
+    Host = "192.168.0.1:22"
+    AuthMethod = "publickey"
+    KeyPath = "/home/mike/.ssh/key.pem"
 ```
 
 ## Contribute
