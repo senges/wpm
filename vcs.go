@@ -63,8 +63,8 @@ func PushToCurrent() {
 }
 
 /* Switch to branch envName */
-func SwitchToBranch(envName string) error {
-	ref := fmt.Sprintf("refs/heads/%s", envName)
+	func SwitchToBranch(branchName string) error {
+	ref := fmt.Sprintf("refs/heads/%s", branchName)
 	spec := fmt.Sprintf("%s:%s", ref, ref)
 
 	INFO("Retrieving local repository information")
@@ -74,11 +74,11 @@ func SwitchToBranch(envName string) error {
 	w, err := r.Worktree()
 	CheckIfError(err)
 
-	if !branchExists(r, envName) {
+	if !branchExists(r, branchName) {
 		return ErrEnvDoesNotExists
 	}
 
-	INFO("Fetching remote branch %v", envName)
+	INFO("Fetching remote branch %v", branchName)
 	err = r.Fetch(&git.FetchOptions{
 		RemoteName: "origin",
 		RefSpecs: []config.RefSpec{ config.RefSpec(spec) },
@@ -88,8 +88,8 @@ func SwitchToBranch(envName string) error {
 		CheckIfError(err)
 	}
 
-	INFO("Switching to branch %s", envName)
-	err = w.Checkout(&git.CheckoutOptions{Branch:plumbing.NewBranchReferenceName(envName)})
+	INFO("Switching to branch %s", branchName)
+	err = w.Checkout(&git.CheckoutOptions{Branch:plumbing.NewBranchReferenceName(branchName)})
 	CheckIfError(err)
 
 	showHead(r)
