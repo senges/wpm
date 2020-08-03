@@ -31,6 +31,36 @@ func CloneTo(envName string) {
 	showHead(r)
 }
 
+func PushToCurrent() {
+	INFO("Retrieving local repository information")
+	r, err := git.PlainOpen(ConfigFile.Environment[localEnvName].WpPath)
+	CheckIfError(err)
+
+	w, err := r.Worktree()
+	CheckIfError(err)
+
+	INFO("Building commit object")
+	commit, err := w.Commit("managed by wpm", &git.CommitOptions{
+		All: true,
+	})
+	CheckIfError(err)
+
+	obj, err := r.CommitObject(commit)
+	CheckIfError(err)
+
+	OK("+----+\n%s\n+----+", obj.String())
+
+	/* Not proper usage of CurrentEnv */
+	INFO("Pushing local changes to remote repository (%s)", getCurrentRefName(r))
+	err = r.Push(&git.PushOptions{
+		RemoteName: "origin",
+		Progress: os.Stdout,
+	})
+	CheckIfError(err)
+
+	showHead(r)
+}
+
 /* Switch to branch envName */
 func SwitchToBranch(envName string) error {
 	ref := fmt.Sprintf("refs/heads/%s", envName)
@@ -68,6 +98,7 @@ func SwitchToBranch(envName string) error {
 
 /* Check if branch ref exists */
 /* Quite ugly but quite working as well for the moment */
+/* Might use r.Branch() later */
 func branchExists(r *git.Repository, branchName string) bool {
 	fullRef := fmt.Sprintf("refs/remotes/origin/%s", branchName)
 	exists := false
@@ -93,4 +124,11 @@ func showHead(r *git.Repository) {
 	CheckIfError(err)
 
 	OK("HEAD -> %sRef: %s", commit, ref.Name())
+}
+
+func getCurrentRefName(r *git.Repository) string {
+	ref, err := r.Head()
+	CheckIfError(err)
+
+	return string(ref.Name())
 }
