@@ -34,7 +34,7 @@ func CloneTo(envName string) {
 /* Push local changes to current branch */
 func PushToCurrent() {
 	INFO("Retrieving local repository information")
-	r, err := git.PlainOpen(ConfigFile.Environment[localEnvName].WpPath)
+	r, err := git.PlainOpen( getWD() )
 	CheckIfError(err)
 
 	w, err := r.Worktree()
@@ -68,7 +68,7 @@ func SwitchToBranch(envName string) error {
 	spec := fmt.Sprintf("%s:%s", ref, ref)
 
 	INFO("Retrieving local repository information")
-	r, err := git.PlainOpen(ConfigFile.Environment[localEnvName].WpPath)
+	r, err := git.PlainOpen( getWD() )
 	CheckIfError(err)
 
 	w, err := r.Worktree()

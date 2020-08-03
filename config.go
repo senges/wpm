@@ -2,10 +2,8 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	toml "github.com/pelletier/go-toml"
 	"io/ioutil"
-	"os/user"
 )
 
 const localEnvName string = "local"
@@ -32,28 +30,20 @@ func LoadConfigFileFromDisk() {
 
 	/* Read config file */
 	buffer, err := ioutil.ReadFile("config.toml")
-	if err != nil {
-		fmt.Println("Could not open config file")
-		panic(err)
-	}
+	CheckIfError(err)
 
 	/* Map config file */
-	if err := toml.Unmarshal(buffer, &ConfigFile); err != nil {
-		fmt.Println("Error Unmarshal file")
-		panic(err)
-	}
-
-	/* Default Current environment is set to local */
-	if err := SwitchToEnv(localEnvName); err != nil {
-		fmt.Println("No local environment in config file")
-		panic(err)
-	}
+	err = toml.Unmarshal(buffer, &ConfigFile)
+	CheckIfError(err)
 
 	/* Configure local env with proper user / host */
+	/*
 	localUser, err := user.Current()
+	CheckIfError(err)
 
 	ConfigFile.Environment[localEnvName].Username = localUser.Username
 	ConfigFile.Environment[localEnvName].Host = "localhost"
+	*/
 
 }
 
