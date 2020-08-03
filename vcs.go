@@ -31,6 +31,7 @@ func CloneTo(envName string) {
 	showHead(r)
 }
 
+/* Push local changes to current branch */
 func PushToCurrent() {
 	INFO("Retrieving local repository information")
 	r, err := git.PlainOpen(ConfigFile.Environment[localEnvName].WpPath)
@@ -48,7 +49,7 @@ func PushToCurrent() {
 	obj, err := r.CommitObject(commit)
 	CheckIfError(err)
 
-	OK("+----+\n%s\n+----+", obj.String())
+	OK("---- COMMIT ----\n%s\n------------", obj.String())
 
 	/* Not proper usage of CurrentEnv */
 	INFO("Pushing local changes to remote repository (%s)", getCurrentRefName(r))
@@ -115,6 +116,7 @@ func branchExists(r *git.Repository, branchName string) bool {
 	return exists
 }
 
+/* Show commit object pointed by HEAD */
 func showHead(r *git.Repository) {
 
 	ref, err := r.Head()
@@ -126,6 +128,7 @@ func showHead(r *git.Repository) {
 	OK("HEAD -> %sRef: %s", commit, ref.Name())
 }
 
+/* Get ref of current local branch */
 func getCurrentRefName(r *git.Repository) string {
 	ref, err := r.Head()
 	CheckIfError(err)
