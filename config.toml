@@ -2,9 +2,6 @@ VCS = "github.com/user/repo.git"
 
 [Environment]
 
-    [Environment.local]
-    WpPath = "/var/www/html/wordpress"
-
     [Environment.dev]
     WpPath = "/var/www/html/wordpress"
     Username = "web-manager"

@@ -76,6 +76,12 @@ func WpmDeploy(c *cli.Context) error {
 
 /* Not Yet Implemented */
 func WpmSave(c *cli.Context) error {
+	if err := checkWorkingDirectory(); err != nil {
+		return err
+	}
+
+	PushToCurrent()
+
 	return nil
 }
 
@@ -86,5 +92,10 @@ func WpmDbBackup(c *cli.Context) error {
 
 /* Not Yet Implemented */
 func WpmDbPull(c *cli.Context) error {
+	return nil
+}
+
+/* Check wp to make sure it's wpm compliant */
+func checkWorkingDirectory() error {
 	return nil
 }
